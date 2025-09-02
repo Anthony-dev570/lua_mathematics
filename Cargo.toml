@@ -1,0 +1,9 @@
+[package]
+name = "lua_mathematics"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rlua = { version = "*", features = ["builtin-lua54"] }
+serde_json = { version = "*" }
+serde = { version = "*", features = ["derive"] }
