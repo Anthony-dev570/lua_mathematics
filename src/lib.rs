@@ -1,16 +1,76 @@
+use rlua::{Function, Lua, UserData};
 use std::time::{Duration, Instant};
 
 pub mod scalar;
 pub mod vector;
 pub mod prelude;
+pub mod macros;
+
+pub struct LuaAssociatedFunction<'a, 'lua> {
+    pub function: Function<'lua>,
+    pub name: &'a str
+}
+
+pub trait LuaObject: UserData {
+    type Args;
+    const CONSTRUCTOR_NAME: &'static str;
+    fn create_constructor(lua: &Lua) -> rlua::Result<Function>;
+
+    fn associated_functions(lua: &Lua) -> rlua::Result<Vec<LuaAssociatedFunction>>;
+
+    fn load_lua(lua: &Lua) -> rlua::Result<()> {
+        let constructor = Self::create_constructor(lua)?;
+        lua.globals().set(Self::CONSTRUCTOR_NAME, constructor)?;
+
+        for associated_function in Self::associated_functions(lua)? {
+            lua.globals().set(associated_function.name, associated_function.function)?;
+        }
+
+        Ok(())
+    }
+}
 
 #[cfg(test)]
 mod tests {
-    use crate::prelude::vec2f;
+    use crate::vector::vec2::{Vec2D, Vec2F};
+    use crate::LuaObject;
+    use rlua::Lua;
+    use crate::vector::vec3::{Vec3D, Vec3F};
 
     #[test]
     fn it_works() {
-        let v = vec2f(1.0, 2.0);
+        let lua = Lua::new();
+        Vec2F::load_lua(&lua).unwrap();
+        Vec2D::load_lua(&lua).unwrap();
+
+        Vec3F::load_lua(&lua).unwrap();
+        Vec3D::load_lua(&lua).unwrap();
+
+        let t = lua.load(r#"
+
+        local a_x = 0.0
+        local a_y = 0.0
+        local a_z = 1.0
+
+        local b_x = 0.0
+        local b_y = 1.0
+        local b_z = 0.0
+
+        local a = vec3f(a_x, a_y, a_z)
+        local b = vec3f(b_x, b_y, b_z)
+        local n = a:cross_product(b)
+
+        print("a: " .. tostring(a))
+        print("b: " .. tostring(b))
+        print("n: " .. tostring(n))
+
+        "#).exec();
+        match t {
+            Ok(_) => (),
+            Err(e) => {
+                println!("{e}");
+            }
+        }
     }
 }
 

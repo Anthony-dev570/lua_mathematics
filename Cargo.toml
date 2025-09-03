@@ -5,5 +5,7 @@ edition = "2021"
 
 [dependencies]
 rlua = { version = "*", features = ["builtin-lua54"] }
-serde_json = { version = "*" }
-serde = { version = "*", features = ["derive"] }
+#serde_json = { version = "*" }
+#serde = { version = "*", features = ["derive"] }
+mlua = "*"
+paste = "*"
