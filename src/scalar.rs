@@ -6,19 +6,23 @@ crate::scalar!(f32);
 crate::scalar!(f64);
 
 pub trait Scalar:
-Copy + Clone + Debug + Default + Display +
-PartialEq + PartialOrd
-+ Sum<Self> + Neg<Output=Self>
-
-+ Add<Output = Self>
-+ Sub<Output = Self>
-+ Mul<Output = Self>
-+ Div<Output = Self>
-
-+ AddAssign
-+ SubAssign
-+ MulAssign
-+ DivAssign
+    Copy
+    + Clone
+    + Debug
+    + Default
+    + Display
+    + PartialEq
+    + PartialOrd
+    + Sum<Self>
+    + Neg<Output = Self>
+    + Add<Output = Self>
+    + Sub<Output = Self>
+    + Mul<Output = Self>
+    + Div<Output = Self>
+    + AddAssign
+    + SubAssign
+    + MulAssign
+    + DivAssign
 {
     const ZERO: Self;
     const ONE: Self;
@@ -44,6 +48,12 @@ PartialEq + PartialOrd
 
     fn from_f32(f: f32) -> Self;
     fn from_f64(f: f64) -> Self;
+
+    fn to_f32(self) -> f32;
+    fn to_f64(self) -> f64;
+
+    fn rads(self) -> Self;
+    fn degs(self) -> Self;
 }
 
 #[macro_export]
@@ -93,6 +103,22 @@ macro_rules! scalar {
 
             fn from_f64(f: f64) -> Self {
                 f as $t
+            }
+
+            fn to_f32(self) -> f32 {
+                self as f32
+            }
+
+            fn to_f64(self) -> f64 {
+                self as f64
+            }
+
+            fn rads(self) -> Self {
+                self.to_radians()
+            }
+
+            fn degs(self) -> Self {
+                self.to_degrees()
             }
         }
     };

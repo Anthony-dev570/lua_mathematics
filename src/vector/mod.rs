@@ -14,6 +14,7 @@ macro_rules! lua_vector_methods {
     ($methods:ident) => {
         $methods.add_meta_method(rlua::MetaMethod::ToString, |_, this, _: ()| Ok(this.to_string()));
         $methods.add_meta_method(rlua::MetaMethod::Len, |_, this, _: ()| Ok(this.magnitude()));
+
         $methods.add_meta_method(rlua::MetaMethod::Index, |_, this, index: rlua::AnyUserData| {
             //Ok(this[index])
             if let Ok(index) = index.borrow::<usize>() {

@@ -1,0 +1,323 @@
+use crate::scalar::Scalar;
+use mlua::{AnyUserData, Lua, MetaMethod, Number, UserData, UserDataMethods};
+use std::fmt::{Display, Formatter};
+use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
+
+pub type AngleF = Angle<f32>;
+pub type AngleD = Angle<f64>;
+
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
+pub enum AngleOperatorValue<S: Scalar> {
+    Angle(Angle<S>),
+    Scalar(S)
+}
+
+#[derive(Debug, Clone, Copy, PartialOrd)]
+pub enum Angle<S: Scalar> {
+    Radians(S),
+    Degrees(S)
+}
+
+impl UserData for AngleF {
+    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
+        methods.add_meta_method(MetaMethod::ToString, |_, this, ()| Ok(format!("{}", this)));
+
+        methods.add_meta_method(MetaMethod::Add, |_, this, b: AnyUserData| {
+            if let Ok(i) = b.borrow::<f32>() {
+                let a = *this;
+                return Ok(a + *i);
+            }
+
+            if let Ok(i) = b.borrow::<f64>() {
+                let a = *this;
+                return Ok(a + i.to_f32());
+            }
+
+            if let Ok(a) = b.borrow::<Self>() {
+                return Ok(*a + *this);
+            }
+            Ok(*this)
+        });
+
+        methods.add_meta_method(MetaMethod::Sub, |_, this, b: AnyUserData| {
+            if let Ok(i) = b.borrow::<f32>() {
+                let a = *this;
+                return Ok(a - *i);
+            }
+
+            if let Ok(i) = b.borrow::<f64>() {
+                let a = *this;
+                return Ok(a - i.to_f32());
+            }
+
+            if let Ok(a) = b.borrow::<Self>() {
+                return Ok(*a - *this);
+            }
+            Ok(*this)
+        });
+
+        methods.add_meta_method(MetaMethod::Mul, |_, this, b: AnyUserData| {
+            if let Ok(i) = b.borrow::<f32>() {
+                let a = *this;
+                return Ok(a * *i);
+            }
+
+            if let Ok(i) = b.borrow::<f64>() {
+                let a = *this;
+                return Ok(a * i.to_f32());
+            }
+
+            if let Ok(a) = b.borrow::<Self>() {
+                return Ok(*a * *this);
+            }
+            Ok(*this)
+        });
+
+        methods.add_meta_method(MetaMethod::Add, |_, this, b: AnyUserData| {
+            if let Ok(i) = b.borrow::<f32>() {
+                let a = *this;
+                return Ok(a / *i);
+            }
+
+            if let Ok(i) = b.borrow::<f64>() {
+                let a = *this;
+                return Ok(a / i.to_f32());
+            }
+
+            if let Ok(a) = b.borrow::<Self>() {
+                return Ok(*a / *this);
+            }
+            Ok(*this)
+        });
+
+        methods.add_method("to_rad", |_, this, ()| Ok(this.to_radians()));
+        methods.add_method("to_deg", |_, this, ()| Ok(this.to_degrees()));
+        methods.add_method("take", |_, this, ()| Ok(this.take().to_f64()));
+    }
+}
+
+impl UserData for AngleD {
+    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
+        methods.add_meta_method(MetaMethod::ToString, |_, this, ()| Ok(format!("{}", this)));
+
+        methods.add_meta_method(MetaMethod::Add, |_, this, b: AnyUserData| {
+            if let Ok(i) = b.borrow::<f32>() {
+                let a = *this;
+                return Ok(a + i.to_f64());
+            }
+
+            if let Ok(i) = b.borrow::<f64>() {
+                let a = *this;
+                return Ok(a + *i);
+            }
+
+            if let Ok(a) = b.borrow::<Self>() {
+                return Ok(*a + *this);
+            }
+            Ok(*this)
+        });
+
+        methods.add_method("to_rad", |_, this, ()| Ok(this.to_radians()));
+        methods.add_method("to_deg", |_, this, ()| Ok(this.to_degrees()));
+        methods.add_method("take", |_, this, ()| Ok(this.take().to_f64()));
+    }
+}
+
+impl Angle<Number> {
+    pub fn load_lua(lua: &Lua) -> rlua::Result<()> {
+        lua.globals().set("rad", lua.create_function(|_, args: Number| {
+            Ok(Self::Radians(args))
+        })?)?;
+
+        lua.globals().set("deg", lua.create_function(|_, args: Number| {
+            Ok(Self::Degrees(args))
+        })?)?;
+
+        Ok(())
+    }
+}
+
+impl<S: Scalar> Angle<S> {
+    pub fn sin(self) -> S {
+        self.to_radians().take().sine()
+    }
+
+    pub fn cos(self) -> S {
+        self.to_radians().take().cosine()
+    }
+
+    pub fn tan(self) -> S {
+        self.to_radians().take().tangent()
+    }
+
+    pub fn to_radians(self) -> Self {
+        match self {
+            Angle::Radians(_) => self,
+            Angle::Degrees(d) => Self::Radians(d.rads())
+        }
+    }
+
+    pub fn to_degrees(self) -> Self {
+        match self {
+            Angle::Radians(r) => Self::Degrees(r.degs()),
+            Angle::Degrees(_) => self
+        }
+    }
+
+    pub fn is_degrees(self) -> bool {
+        match self {
+            Angle::Degrees(_) => true,
+            _ => false
+        }
+    }
+
+    pub fn is_radians(self) -> bool {
+        match self {
+            Angle::Radians(_) => true,
+            _ => false
+        }
+    }
+
+    pub fn take(self) -> S {
+        match self {
+            Angle::Radians(r) => r,
+            Angle::Degrees(d) => d
+        }
+    }
+}
+
+impl <S: Scalar> Into<AngleOperatorValue<S>> for Angle<S> {
+    fn into(self) -> AngleOperatorValue<S> {
+        AngleOperatorValue::Angle(self)
+    }
+}
+
+impl Into<AngleOperatorValue<f32>> for f32 {
+    fn into(self) -> AngleOperatorValue<f32> {
+        AngleOperatorValue::Scalar(self)
+    }
+}
+
+impl Into<AngleOperatorValue<f64>> for f64 {
+    fn into(self) -> AngleOperatorValue<f64> {
+        AngleOperatorValue::Scalar(self)
+    }
+}
+
+impl <S: Scalar, I: Into<AngleOperatorValue<S>>> Add<I> for Angle<S> {
+    type Output = Self;
+
+    fn add(self, rhs: I) -> Self::Output {
+        match rhs.into() {
+            AngleOperatorValue::Angle(angle) => {
+                match self {
+                    Angle::Radians(r) => Self::Radians(r + angle.to_radians().take()),
+                    Angle::Degrees(d) => Self::Degrees(d + angle.to_degrees().take())
+                }
+            }
+            AngleOperatorValue::Scalar(s) => match self {
+                Angle::Radians(r) => Self::Radians(r + s),
+                Angle::Degrees(d) => Self::Degrees(d + s)
+            }
+        }
+    }
+}
+
+impl <S: Scalar, I: Into<AngleOperatorValue<S>>> Sub<I> for Angle<S> {
+    type Output = Self;
+
+    fn sub(self, rhs: I) -> Self::Output {
+        match rhs.into() {
+            AngleOperatorValue::Angle(angle) => {
+                match self {
+                    Angle::Radians(r) => Self::Radians(r - angle.to_radians().take()),
+                    Angle::Degrees(d) => Self::Degrees(d - angle.to_degrees().take())
+                }
+            }
+            AngleOperatorValue::Scalar(s) => match self {
+                Angle::Radians(r) => Self::Radians(r - s),
+                Angle::Degrees(d) => Self::Degrees(d - s)
+            }
+        }
+    }
+}
+
+impl <S: Scalar, I: Into<AngleOperatorValue<S>>> Mul<I> for Angle<S> {
+    type Output = Self;
+
+    fn mul(self, rhs: I) -> Self::Output {
+        match rhs.into() {
+            AngleOperatorValue::Angle(angle) => {
+                match self {
+                    Angle::Radians(r) => Self::Radians(r * angle.to_radians().take()),
+                    Angle::Degrees(d) => Self::Degrees(d * angle.to_degrees().take())
+                }
+            }
+            AngleOperatorValue::Scalar(s) => match self {
+                Angle::Radians(r) => Self::Radians(r * s),
+                Angle::Degrees(d) => Self::Degrees(d * s)
+            }
+        }
+    }
+}
+
+impl <S: Scalar, I: Into<AngleOperatorValue<S>>> Div<I> for Angle<S> {
+    type Output = Self;
+
+    fn div(self, rhs: I) -> Self::Output {
+        match rhs.into() {
+            AngleOperatorValue::Angle(angle) => {
+                match self {
+                    Angle::Radians(r) => Self::Radians(r / angle.to_radians().take()),
+                    Angle::Degrees(d) => Self::Degrees(d / angle.to_degrees().take())
+                }
+            }
+            AngleOperatorValue::Scalar(s) => match self {
+                Angle::Radians(r) => Self::Radians(r / s),
+                Angle::Degrees(d) => Self::Degrees(d / s)
+            }
+        }
+    }
+}
+
+impl <S: Scalar, I: Into<AngleOperatorValue<S>>> AddAssign<I> for Angle<S> {
+    fn add_assign(&mut self, rhs: I) {
+        *self = *self + rhs;
+    }
+}
+
+impl <S: Scalar, I: Into<AngleOperatorValue<S>>> SubAssign<I> for Angle<S> {
+    fn sub_assign(&mut self, rhs: I) {
+        *self = *self - rhs;
+    }
+}
+
+impl <S: Scalar, I: Into<AngleOperatorValue<S>>> MulAssign<I> for Angle<S> {
+    fn mul_assign(&mut self, rhs: I) {
+        *self = *self * rhs;
+    }
+}
+
+impl <S: Scalar, I: Into<AngleOperatorValue<S>>> DivAssign<I> for Angle<S> {
+    fn div_assign(&mut self, rhs: I) {
+        *self = *self / rhs;
+    }
+}
+
+impl<S: Scalar> PartialEq for Angle<S> {
+    fn eq(&self, other: &Self) -> bool {
+        match self {
+            Angle::Radians(r) => r.eq(&other.to_radians().take()),
+            Angle::Degrees(d) => d.eq(&other.to_degrees().take()),
+        }
+    }
+}
+
+impl <S: Scalar> Display for Angle<S> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Angle::Radians(r) => f.write_fmt(format_args!("{r}")),
+            Angle::Degrees(d) => f.write_fmt(format_args!("{d}°")),
+        }
+    }
+}

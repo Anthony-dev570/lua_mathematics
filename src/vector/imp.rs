@@ -1,6 +1,7 @@
 use std::ffi::c_void;
 use std::fmt::Display;
 use std::ops::{Add, Index, IndexMut, Mul, Neg, Sub};
+use crate::angle::Angle;
 use crate::scalar::Scalar;
 use crate::vector::Vector;
 
@@ -40,8 +41,8 @@ impl<const L: usize, S: Scalar> Vector<L, S> {
         *self = self.normalized();
     }
 
-    pub fn angle_between(&self, other: &Self) -> S {
-        (self.dot_product(other) / (self.magnitude() * other.magnitude())).inverse_cosine()
+    pub fn angle_between(&self, other: &Self) -> Angle<S> {
+        Angle::Radians((self.dot_product(other) / (self.magnitude() * other.magnitude())).inverse_cosine())
     }
 
     pub fn as_ptr(&self) -> *const S {
