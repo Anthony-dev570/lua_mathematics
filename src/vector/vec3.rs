@@ -7,6 +7,15 @@ pub type Vec3F = Vec3<f32>;
 pub type Vec3D = Vec3<f64>;
 
 impl<S: Scalar> Vec3<S> {
+    pub const RIGHT: Self = Self::from_array([S::ONE, S::ZERO, S::ZERO]);
+    pub const LEFT: Self = Self::from_array([S::NEG_ONE, S::ZERO, S::ZERO]);
+
+    pub const UP: Self = Self::from_array([S::ZERO, S::ONE, S::ZERO]);
+    pub const DOWN: Self = Self::from_array([S::ZERO, S::NEG_ONE, S::ZERO]);
+
+    pub const FORWARD: Self = Self::from_array([S::ZERO, S::ZERO, S::ONE]);
+    pub const BACK: Self = Self::from_array([S::ZERO, S::ZERO, S::NEG_ONE]);
+
     property!(
         self(x) -> S { self.0[0] }
         self(y) -> S { self.0[1] }
@@ -28,7 +37,7 @@ impl<S: Scalar> Vec3<S> {
 
 use crate::lua_vector_methods;
 
-lua_vector!(Vec3F {
+lua_vector!(Vec3F[f32] {
     Args = (Option<f32>, Option<f32>, Option<f32>),
     CONSTRUCTOR_NAME = "vec3f",
     create_constructor = (lua) {
@@ -55,9 +64,9 @@ lua_vector!(Vec3F {
     }
 });
 
-lua_vector!(Vec3D {
+lua_vector!(Vec3D[f64] {
     Args = (Option<f64>, Option<f64>, Option<f64>),
-    CONSTRUCTOR_NAME = "vec3f",
+    CONSTRUCTOR_NAME = "vec3d",
     create_constructor = (lua) {
         lua.create_function(|_, args: Self::Args| {
             Ok(Self::from_array([

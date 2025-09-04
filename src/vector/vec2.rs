@@ -5,7 +5,7 @@ pub type Vec2<S> = Vector<2, S>;
 pub type Vec2F = Vec2<f32>;
 pub type Vec2D = Vec2<f64>;
 
-lua_vector!(Vec2F {
+lua_vector!(Vec2F[f32] {
     Args = (Option<f32>, Option<f32>),
     CONSTRUCTOR_NAME = "vec2f",
     create_constructor = (lua) {
@@ -29,7 +29,7 @@ lua_vector!(Vec2F {
     }
 });
 
-lua_vector!(Vec2D {
+lua_vector!(Vec2D[f64] {
     Args = (Option<f64>, Option<f64>),
     CONSTRUCTOR_NAME = "vec2d",
     create_constructor = (lua) {
@@ -49,6 +49,8 @@ lua_vector!(Vec2D {
         }
     ]
     methods = (methods) {
-        
+        fn up(this, _a: ()) {
+            Ok(this.up())
+        }
     }
 });

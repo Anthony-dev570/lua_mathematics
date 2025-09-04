@@ -2,8 +2,8 @@ use std::fmt::{Debug, Display};
 use std::iter::Sum;
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
 
-crate::scalar!(f32);
-crate::scalar!(f64);
+crate::scalar!(f32 => "f");
+crate::scalar!(f64 => "d");
 
 pub trait Scalar:
     Copy
@@ -24,10 +24,12 @@ pub trait Scalar:
     + MulAssign
     + DivAssign
 {
+    const NEG_ONE: Self;
     const ZERO: Self;
     const ONE: Self;
     const TWO: Self;
     const PI: Self;
+    const NAME: &'static str;
 
     fn sine(self) -> Self;
     fn cosine(self) -> Self;
@@ -58,12 +60,14 @@ pub trait Scalar:
 
 #[macro_export]
 macro_rules! scalar {
-    ($t:ty) => {
+    ($t:ty => $name:literal) => {
         impl Scalar for $t {
+            const NEG_ONE: Self = -1f64 as $t;
             const ZERO: Self = 0f64 as $t;
             const ONE: Self = 1f64 as $t;
             const TWO: Self = 2f64 as $t;
             const PI: Self = std::f64::consts::PI as $t;
+            const NAME: &'static str = $name;
 
             fn sine(self) -> Self {
                 self.sin()

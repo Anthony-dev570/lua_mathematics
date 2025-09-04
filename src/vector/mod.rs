@@ -4,6 +4,7 @@ use rlua::FromLua;
 pub mod imp;
 pub mod vec2;
 pub mod vec3;
+pub mod vec4;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, FromLua)]
 #[repr(C)]
@@ -11,7 +12,7 @@ pub struct Vector<const L: usize, S: Scalar>([S; L]);
 
 #[macro_export]
 macro_rules! lua_vector_methods {
-    ($methods:ident) => {
+    ($methods:ident[$cast:ty]) => {
         $methods.add_meta_method(rlua::MetaMethod::ToString, |_, this, _: ()| Ok(this.to_string()));
         $methods.add_meta_method(rlua::MetaMethod::Len, |_, this, _: ()| Ok(this.magnitude()));
 
@@ -30,10 +31,10 @@ macro_rules! lua_vector_methods {
                 return Ok(*this + *index);
             }
             if let Ok(index) = index.borrow::<rlua::Integer>() {
-                return Ok(*this + (*index as f64));
+                return Ok(*this + (*index as $cast));
             }
             if let Ok(index) = index.borrow::<rlua::Number>() {
-                return Ok(*this + *index);
+                return Ok(*this + *index as $cast);
             }
             Ok(*this)
         });
@@ -52,10 +53,10 @@ macro_rules! lua_vector_methods {
         });
         $methods.add_meta_method(rlua::MetaMethod::Mul, |_, this, index: rlua::AnyUserData| {
             if let Ok(index) = index.borrow::<rlua::Integer>() {
-                return Ok(*this * (*index as f64));
+                return Ok(*this * (*index as $cast));
             }
             if let Ok(index) = index.borrow::<rlua::Number>() {
-                return Ok(*this * *index);
+                return Ok(*this * *index as $cast);
             }
             Ok(*this)
         });
@@ -70,7 +71,7 @@ macro_rules! lua_vector_methods {
 #[macro_export]
 macro_rules! lua_vector {
     (
-        $t:ty {
+        $t:ty[$cast:ty] {
             Args = $args:ty,
             CONSTRUCTOR_NAME = $constructor_name:literal,
             create_constructor = ($lua:ident) $constructor_block:block,
@@ -84,7 +85,7 @@ macro_rules! lua_vector {
     ) => {
         impl rlua::UserData for $t {
             fn add_methods<'lua, M: rlua::UserDataMethods<'lua, Self>>($methods: &mut M) {
-                lua_vector_methods!($methods);
+                lua_vector_methods!($methods[$cast]);
                 $(
                     $methods.add_method(stringify!($method_name), |_, $this, $method_args: $method_args_type| $method_block);
                 )*

@@ -1,9 +1,15 @@
+#![allow(incomplete_features)]
+#![feature(generic_const_exprs)]
+
 use rlua::{Function, Lua, UserData};
 use std::time::{Duration, Instant};
 
 pub mod angle;
+pub mod euler;
 pub mod macros;
+pub mod matrix;
 pub mod prelude;
+pub mod quaternion;
 pub mod scalar;
 pub mod vector;
 
@@ -35,10 +41,16 @@ pub trait LuaObject: UserData {
 #[cfg(test)]
 mod tests {
     use crate::angle::Angle;
+    use crate::euler::EulerF;
+    use crate::matrix::matrix2x2::Matrix2x2F;
+    use crate::matrix::matrix3x3::Matrix3x3F;
+    use crate::quaternion::QuatF;
     use crate::vector::vec2::{Vec2D, Vec2F};
     use crate::vector::vec3::{Vec3D, Vec3F};
+    use crate::vector::vec4::Vec4F;
     use crate::LuaObject;
     use rlua::Lua;
+    use crate::matrix::matrix4x4::Matrix4x4F;
 
     #[test]
     fn it_works() {
@@ -49,30 +61,31 @@ mod tests {
         Vec3F::load_lua(&lua).unwrap();
         Vec3D::load_lua(&lua).unwrap();
 
+        Vec4F::load_lua(&lua).unwrap();
+
         Angle::load_lua(&lua).unwrap();
 
-        let a = Angle::Radians(0f32);
-        let b = a + 5f32;
+        Matrix2x2F::load_lua(&lua).unwrap();
+        Matrix3x3F::load_lua(&lua).unwrap();
+        Matrix4x4F::load_lua(&lua).unwrap();
 
-        //println!("b: {}", b.to_degrees());
+        EulerF::from_lua(&lua).unwrap();
+
+        QuatF::load_lua(&lua).unwrap();
 
         let t = lua
             .load(
                 r#"
+        local left = 0
+        local right = 500
+        local bottom = 0
+        local top = 500
+        local near = -1
+        local far = 1
 
-        local a_x = 1.0
-        local a_y = 1.0
-        local a_z = 0.3
+        local ms = mat4x4f_ortho(left, right, bottom, top, near, far)
 
-        local b_x = 0.0
-        local b_y = 1.0
-        local b_z = 0.0
-
-        local a = vec3f(a_x, a_y, a_z)
-        local b = vec3f(b_x, b_y, b_z)
-
-        local angle = a:angle(b)
-        print(tostring(angle:to_deg()))
+        print(tostring(ms))
 
         "#,
             )
