@@ -123,6 +123,22 @@ impl UserData for AngleD {
     }
 }
 
+impl AngleF {
+    pub fn load_lua(lua: &Lua) -> rlua::Result<()> {
+        lua.globals().set(
+            "radf",
+            lua.create_function(|_, args: Number| Ok(Self::Radians(args as f32)))?,
+        )?;
+
+        lua.globals().set(
+            "degf",
+            lua.create_function(|_, args: Number| Ok(Self::Degrees(args as f32)))?,
+        )?;
+
+        Ok(())
+    }
+}
+
 impl Angle<Number> {
     pub fn load_lua(lua: &Lua) -> rlua::Result<()> {
         lua.globals().set(
