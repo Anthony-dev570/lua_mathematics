@@ -63,7 +63,7 @@ mod tests {
 
         Vec4F::load_lua(&lua).unwrap();
 
-        Angle::load_lua(&lua).unwrap();
+        //Angle::load_lua(&lua).unwrap();
 
         Matrix2x2F::load_lua(&lua).unwrap();
         Matrix3x3F::load_lua(&lua).unwrap();

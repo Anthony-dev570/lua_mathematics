@@ -93,18 +93,25 @@ impl<S: Scalar> Matrix4x4<S> {
     }
 
     pub fn look_at(eye: &Vec3<S>, center: &Vec3<S>, up: &Vec3<S>) -> Self {
-        let fwd = (*center - *eye).normalized();
-        let side = fwd.cross(up).normalized();
-        let up = side.cross(&fwd).normalized();
 
-        Self([
-            Vector::from_array([side[0], side[1], side[2], -side.dot_product(&eye)]),
-            Vector::from_array([up[0], up[1], up[2], -up.dot_product(&eye)]),
-            Vector::from_array([-fwd[0], fwd[1], fwd[2], -fwd.dot_product(&eye)]),
-            Vector::from_array([S::ZERO, S::ZERO, S::ZERO, S::ONE]),
+        let zero = S::ZERO;
+        let one = S::ONE;
+        let f = (*center - *eye).normalized();
+        let s = f.cross(up).normalized();
+        let u = s.cross(&f);
+
+        Matrix::from_array([
+            Vector::from_array([s.x(), u.x(), -f.x(), zero]),
+            Vector::from_array([s.y(), u.y(), -f.y(), zero]),
+            Vector::from_array([s.z(), u.z(), -f.z(), zero]),
+            Vector::from_array([
+                -s.dot_product(&eye),
+                -u.dot_product(&eye),
+                f.dot_product(&eye),
+                one,
+            ]),
         ])
     }
-
 }
 
 impl<S: Scalar> Mul<Self> for Matrix4x4<S> {
