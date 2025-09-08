@@ -53,18 +53,21 @@ impl<S: Scalar> Matrix4x4<S> {
         ])
     }
 
-    pub fn perspective(aspect_ratio: S, fov: Angle<S>, near: S, far: S) -> Self {
-        let fov = (fov.to_radians().take() / S::TWO).tangent();
+
+    pub fn perspective(aspect: S, fov: Angle<S>,  near: S, far: S) -> Self {
+        let zero = S::ZERO;
+        let one = S::ONE;
+        let two = S::TWO;
+        let q = one / (fov.to_radians().take() / two).tangent();
+        let a = q / aspect;
+        let b = (near + far) / (near - far);
+        let c = (two * near * far) / (near - far);
+
         Self::from_array([
-            Vec4::from_array([S::ONE / (aspect_ratio * fov), S::ZERO, S::ZERO, S::ZERO]),
-            Vec4::from_array([S::ZERO, S::ONE / fov, S::ZERO, S::ZERO]),
-            Vec4::from_array([
-                S::ZERO,
-                S::ZERO,
-                -(far + near) / (far - near),
-                -(S::TWO * far * near) / (far - near),
-            ]),
-            Vec4::from_array([S::ZERO, S::ZERO, -S::ONE, S::ZERO]),
+            Vector::from_array([a, zero, zero, zero]),
+            Vector::from_array([zero, q, zero, zero]),
+            Vector::from_array([zero, zero, b, zero - one]),
+            Vector::from_array([zero, zero, c, zero]),
         ])
     }
 
