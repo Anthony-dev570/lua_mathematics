@@ -117,6 +117,18 @@ impl<S: Scalar> Matrix4x4<S> {
             ]),
         ])
     }
+
+    pub fn rotation_z(angle: Angle<S>) -> Self {
+        let angle = angle.take_radians();
+        let (sin, cos, neg_sin) = (angle.sine(), angle.cosine(), -angle.sine());
+
+        Self::from_array([
+            Vec4::from_array([cos, neg_sin, S::ZERO, S::ZERO]),
+            Vec4::from_array([sin, cos, S::ZERO, S::ZERO]),
+            Vec4::from_array([S::ZERO, S::ZERO, S::ONE, S::ZERO]),
+            Vec4::from_array([S::ZERO, S::ZERO, S::ZERO, S::ONE]),
+        ])
+    }
 }
 
 impl<S: Scalar> Mul<Self> for Matrix4x4<S> {

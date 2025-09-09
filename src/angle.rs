@@ -220,6 +220,14 @@ impl<S: Scalar> Angle<S> {
             Angle::Degrees(d) => d,
         }
     }
+
+    pub fn take_radians(self) -> S {
+        self.to_radians().take()
+    }
+
+    pub fn take_degrees(self) -> S {
+        self.to_degrees().take()
+    }
 }
 
 impl<S: Scalar> Into<AngleOperatorValue<S>> for Angle<S> {
