@@ -12,6 +12,7 @@ pub mod prelude;
 pub mod quaternion;
 pub mod scalar;
 pub mod vector;
+pub mod interpolation;
 
 pub struct LuaAssociatedFunction<'a, 'lua> {
     pub function: Function<'lua>,

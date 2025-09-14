@@ -3,7 +3,8 @@ use crate::scalar::Scalar;
 use crate::vector::Vector;
 use std::ffi::c_void;
 use std::fmt::Display;
-use std::ops::{Add, Index, IndexMut, Mul, Neg, Sub};
+use std::ops::{Add, Div, Index, IndexMut, Mul, Neg, Sub};
+use crate::interpolation::Interpolation;
 
 impl<const L: usize, S: Scalar> Vector<L, S> {
     pub const ZERO: Self = Self([S::ZERO; L]);
@@ -208,6 +209,20 @@ impl<const L: usize, S: Scalar> Mul<Self> for Vector<L, S> {
     }
 }
 
+impl<const L: usize, S: Scalar> Div<Self> for Vector<L, S> {
+    type Output = Self;
+
+    fn div(self, rhs: Self) -> Self::Output {
+        let mut out = Self::ZERO;
+
+        for i in 0..L {
+            out[i] /= rhs[i];
+        }
+
+        out
+    }
+}
+
 impl<const L: usize, S: Scalar> Neg for Vector<L, S> {
     type Output = Self;
 
@@ -217,5 +232,15 @@ impl<const L: usize, S: Scalar> Neg for Vector<L, S> {
             out[i] = -self[i];
         }
         out
+    }
+}
+
+impl <const L: usize, S: Scalar> Interpolation<S> for Vector<L, S> {
+    fn lerp(a: Self, b: Self, t: S) -> Self {
+        a + (b - a) * t
+    }
+
+    fn inverse_lerp<F: Fn(&Self) -> S>(a: Self, b: Self, v: Self, f: F) -> S {
+        f(&((v - a) / (b - a)))
     }
 }
