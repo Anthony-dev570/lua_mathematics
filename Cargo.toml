@@ -4,9 +4,5 @@ version = "0.1.3"
 edition = "2021"
 
 [dependencies]
-rlua = { version = "*", features = ["system-lua54"] }
-#serde_json = { version = "*" }
-#serde = { version = "*", features = ["derive"] }
-mlua = "*"
-paste = "*"
-image = "*"
+rlua = { version = "*", features = ["default"] }
+mlua = { version = "*" }
