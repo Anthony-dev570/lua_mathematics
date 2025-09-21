@@ -75,6 +75,10 @@ pub trait Scalar:
     fn to_percentage(self) -> Percentage<Self> {
         Percentage::new(self)
     }
+
+    fn map(a: Self, b: Self, v: Self, x: Self, y: Self) -> Self {
+        Self::lerp(x, y, (v - a) / (b - a))
+    }
 }
 
 #[macro_export]
