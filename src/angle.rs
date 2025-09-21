@@ -37,7 +37,7 @@ impl <S: Scalar> Interpolation<S> for Angle<S> {
 }
 
 impl UserData for AngleF {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
+    fn add_methods<M: UserDataMethods<Self>>(methods: &mut M) {
 
     }
     /*fn add_methods<'lua, M: rlua::UserDataMethods<'lua, Self>>(methods: &mut M) {
