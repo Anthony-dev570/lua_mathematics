@@ -38,6 +38,9 @@ impl <S: Scalar> Interpolation<S> for Angle<S> {
 
 impl UserData for AngleF {
     fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
+
+    }
+    /*fn add_methods<'lua, M: rlua::UserDataMethods<'lua, Self>>(methods: &mut M) {
         methods.add_meta_method(MetaMethod::ToString, |_, this, ()| Ok(format!("{}", this)));
 
         methods.add_meta_method(MetaMethod::Add, |_, this, b: AnyUserData| {
@@ -111,7 +114,7 @@ impl UserData for AngleF {
         methods.add_method("to_rad", |_, this, ()| Ok(this.to_radians()));
         methods.add_method("to_deg", |_, this, ()| Ok(this.to_degrees()));
         methods.add_method("take", |_, this, ()| Ok(this.take().to_f64()));
-    }
+    }*/
 }
 
 impl UserData for AngleD {
