@@ -9,3 +9,4 @@ rlua = { version = "*" }
 #serde = { version = "*", features = ["derive"] }
 mlua = "*"
 paste = "*"
+image = "*"

@@ -1,6 +1,8 @@
 use std::fmt::{Debug, Display};
 use std::iter::Sum;
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
+use crate::interpolation::Interpolation;
+use crate::percentage::Percentage;
 
 crate::scalar!(f32 => "f");
 crate::scalar!(f64 => "d");
@@ -23,11 +25,17 @@ pub trait Scalar:
     + SubAssign
     + MulAssign
     + DivAssign
+    + std::ops::Rem<Output = Self>
+    + Interpolation<Self>
 {
     const NEG_ONE: Self;
     const ZERO: Self;
     const ONE: Self;
     const TWO: Self;
+    const THREE: Self;
+    const FOUR: Self;
+    const FIVE: Self;
+
     const PI: Self;
     const NAME: &'static str;
 
@@ -56,6 +64,17 @@ pub trait Scalar:
 
     fn rads(self) -> Self;
     fn degs(self) -> Self;
+
+    fn s_clamp(self, min: Self, max: Self) -> Self;
+    fn s_floor(self) -> Self;
+    fn s_ceil(self) -> Self;
+    fn s_abs(self) -> Self;
+
+    fn from_u8(value: u8) -> Self;
+    fn to_u8(self) -> u8;
+    fn to_percentage(self) -> Percentage<Self> {
+        Percentage::new(self)
+    }
 }
 
 #[macro_export]
@@ -66,6 +85,10 @@ macro_rules! scalar {
             const ZERO: Self = 0f64 as $t;
             const ONE: Self = 1f64 as $t;
             const TWO: Self = 2f64 as $t;
+            const THREE: Self = 3f64 as $t;
+            const FOUR: Self = 4f64 as $t;
+            const FIVE: Self = 5f64 as $t;
+
             const PI: Self = std::f64::consts::PI as $t;
             const NAME: &'static str = $name;
 
@@ -123,6 +146,30 @@ macro_rules! scalar {
 
             fn degs(self) -> Self {
                 self.to_degrees()
+            }
+
+            fn s_floor(self) -> Self {
+                self.floor()
+            }
+
+            fn s_ceil(self) -> Self {
+                self.ceil()
+            }
+
+            fn s_abs(self) -> Self {
+                self.abs()
+            }
+
+            fn s_clamp(self, min: Self, max: Self) -> Self {
+                self.max(min).min(max)
+            }
+
+            fn from_u8(v: u8) -> Self {
+                v as Self
+            }
+
+            fn to_u8(self) -> u8 {
+                self as u8
             }
         }
     };

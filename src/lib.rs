@@ -13,6 +13,8 @@ pub mod quaternion;
 pub mod scalar;
 pub mod vector;
 pub mod interpolation;
+pub mod color;
+pub mod percentage;
 
 pub struct LuaAssociatedFunction<'a, 'lua> {
     pub function: Function<'lua>,
@@ -51,7 +53,21 @@ mod tests {
     use crate::vector::vec4::Vec4F;
     use crate::LuaObject;
     use rlua::Lua;
+    use crate::color::Color;
     use crate::matrix::matrix4x4::Matrix4x4F;
+    use crate::percentage::Percentage;
+
+    #[test]
+    fn test_hsv() {
+        let rgb = Color::HSV {
+            h: Angle::Degrees(220.0),
+            s: Percentage::from_100(30).to_color_component(),
+            v: Percentage::from_100(72).to_color_component()
+        };
+
+        println!("{:?}", rgb.rgb_take_bytes());
+        println!("{:?}", rgb.to_rgb().to_hsv());
+    }
 
     #[test]
     fn it_works() {
