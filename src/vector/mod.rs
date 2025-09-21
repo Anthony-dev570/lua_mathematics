@@ -1,5 +1,5 @@
 use crate::scalar::Scalar;
-use rlua::FromLua;
+use mlua::FromLua;
 
 pub mod imp;
 pub mod vec2;
