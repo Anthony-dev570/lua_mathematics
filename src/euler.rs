@@ -1,4 +1,4 @@
-use mlua::{AnyUserData, FromLua, Integer, Lua, MetaMethod, Number, UserData, UserDataMethods};
+use mlua::{AnyUserData, FromLua, Integer, Lua, MetaMethod, Number};
 use crate::angle::{Angle, AngleD, AngleF};
 use crate::quaternion::Quaternion;
 use crate::scalar::Scalar;
@@ -132,6 +132,11 @@ impl EulerF {
         lua.globals().set("eulerf", t)
     }
 }
+
+use rlua::{
+    UserData,
+    UserDataMethods
+};
 
 impl UserData for EulerF {
     fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(_methods: &mut M) {
