@@ -181,12 +181,12 @@ pub mod quatf {
     use crate::quaternion::QuatF;
     use crate::vector::vec3::Vec3F;
     use crate::{LuaAssociatedFunction, LuaObject};
-    use mlua::{Function, Lua};
+    use rlua::{Function, Lua};
     impl LuaObject for QuatF {
         type Args = (Option<f32>, Option<Vec3F>);
         const CONSTRUCTOR_NAME: &'static str = "quatf";
 
-        fn create_constructor(lua: &Lua) -> mlua::Result<Function> {
+        fn create_constructor(lua: &Lua) -> rlua::Result<Function> {
             lua.create_function(|_lua, args: Self::Args| {
                 Ok(Self {
                     w: args.0.unwrap_or(0f32),
@@ -195,7 +195,7 @@ pub mod quatf {
             })
         }
 
-        fn associated_functions(_lua: &Lua) -> mlua::Result<Vec<LuaAssociatedFunction>> {
+        fn associated_functions(_lua: &Lua) -> rlua::Result<Vec<LuaAssociatedFunction>> {
             Ok(vec![
                 LuaAssociatedFunction {
                     function: _lua.create_function(|_, _args: ()| Ok(Self::IDENTITY))?,
