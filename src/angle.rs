@@ -42,9 +42,9 @@ impl UserData for AngleF {
         methods.add_meta_method(MetaMethod::ToString, |_, this, ()| Ok(format!("{}", this)));
 
         methods.add_meta_method(MetaMethod::Add, |_, this, b: AnyUserData| {
-            if let Ok(i) = b.borrow::<f32>() {
+            if let Ok(i) = b.borrow::<Number>() {
                 let a = *this;
-                return Ok(a + *i);
+                return Ok(a + *i as f32);
             }
 
             if let Ok(i) = b.borrow::<f64>() {
