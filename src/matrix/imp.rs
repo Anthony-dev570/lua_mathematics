@@ -151,11 +151,11 @@ macro_rules! lua_matrix {
             type Args = $args;
             const CONSTRUCTOR_NAME: &'static str = $constructor_name;
 
-            fn create_constructor($lua: &rlua::Lua) -> mlua::Result<rlua::Function> {
+            fn create_constructor($lua: &rlua::Lua) -> rlua::Result<rlua::Function> {
                 $constructor_block
             }
 
-            fn associated_functions($lua_functions: &rlua::Lua) -> mlua::Result<Vec<crate::LuaAssociatedFunction>> {
+            fn associated_functions($lua_functions: &rlua::Lua) -> rlua::Result<Vec<crate::LuaAssociatedFunction>> {
                 paste::paste! {
                     Ok(vec![
                     $(
