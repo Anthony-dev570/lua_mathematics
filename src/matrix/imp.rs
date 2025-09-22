@@ -123,7 +123,7 @@ macro_rules! lua_matrix {
         }
     ) => {
         impl rlua::UserData for $t {
-            fn add_methods<M: rlua::UserDataMethods<Self>>(methods: &mut M) {
+            fn add_methods<'lua, M: rlua::UserDataMethods<'lua, Self>>(methods: &mut M) {
                 methods.add_meta_method(rlua::MetaMethod::ToString, |_, this, _: ()| Ok(this.to_string()));
                 methods.add_meta_method(rlua::MetaMethod::Index, |_, this, index: usize| Ok(this[index]));
                 methods.add_method_mut("set", |_, this, (c, r, v): (usize, usize, $f)| {
