@@ -38,7 +38,7 @@ impl UserData for AngleF {
         methods.add_meta_method(MetaMethod::ToString, |_, this, ()| Ok(format!("{}", this)));
 
         methods.add_meta_method(MetaMethod::Add, |_, this, b: AnyUserData| {
-            if let Ok(i) = b.borrow::<Number>() {
+            /*if let Ok(i) = b.borrow::<Number>() {
                 let a = *this;
                 return Ok(a + *i as f32);
             }
@@ -46,7 +46,7 @@ impl UserData for AngleF {
             if let Ok(i) = b.borrow::<f64>() {
                 let a = *this;
                 return Ok(a + i.to_f32());
-            }
+            }*/
 
             if let Ok(a) = b.borrow::<Self>() {
                 return Ok(*a + *this);
@@ -55,7 +55,7 @@ impl UserData for AngleF {
         });
 
         methods.add_meta_method(MetaMethod::Sub, |_, this, b: AnyUserData| {
-            if let Ok(i) = b.borrow::<f32>() {
+            /*if let Ok(i) = b.borrow::<f32>() {
                 let a = *this;
                 return Ok(a - *i);
             }
@@ -63,7 +63,7 @@ impl UserData for AngleF {
             if let Ok(i) = b.borrow::<f64>() {
                 let a = *this;
                 return Ok(a - i.to_f32());
-            }
+            }*/
 
             if let Ok(a) = b.borrow::<Self>() {
                 return Ok(*a - *this);
@@ -72,7 +72,7 @@ impl UserData for AngleF {
         });
 
         methods.add_meta_method(MetaMethod::Mul, |_, this, b: AnyUserData| {
-            if let Ok(i) = b.borrow::<f32>() {
+            /*if let Ok(i) = b.borrow::<f32>() {
                 let a = *this;
                 return Ok(a * *i);
             }
@@ -80,7 +80,7 @@ impl UserData for AngleF {
             if let Ok(i) = b.borrow::<f64>() {
                 let a = *this;
                 return Ok(a * i.to_f32());
-            }
+            }*/
 
             if let Ok(a) = b.borrow::<Self>() {
                 return Ok(*a * *this);
@@ -89,7 +89,7 @@ impl UserData for AngleF {
         });
 
         methods.add_meta_method(MetaMethod::Add, |_, this, b: AnyUserData| {
-            if let Ok(i) = b.borrow::<f32>() {
+            /*if let Ok(i) = b.borrow::<f32>() {
                 let a = *this;
                 return Ok(a / *i);
             }
@@ -97,7 +97,7 @@ impl UserData for AngleF {
             if let Ok(i) = b.borrow::<f64>() {
                 let a = *this;
                 return Ok(a / i.to_f32());
-            }
+            }*/
 
             if let Ok(a) = b.borrow::<Self>() {
                 return Ok(*a / *this);
@@ -119,7 +119,7 @@ impl UserData for AngleD {
         methods.add_meta_method(MetaMethod::ToString, |_, this, ()| Ok(format!("{}", this)));
 
         methods.add_meta_method(MetaMethod::Add, |_, this, b: AnyUserData| {
-            if let Ok(i) = b.borrow::<f32>() {
+            /*if let Ok(i) = b.borrow::<f32>() {
                 let a = *this;
                 return Ok(a + i.to_f64());
             }
@@ -127,7 +127,7 @@ impl UserData for AngleD {
             if let Ok(i) = b.borrow::<f64>() {
                 let a = *this;
                 return Ok(a + *i);
-            }
+            }*/
 
             if let Ok(a) = b.borrow::<Self>() {
                 return Ok(*a + *this);
