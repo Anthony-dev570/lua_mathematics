@@ -1,5 +1,6 @@
 use crate::scalar::Scalar;
-use rlua::{AnyUserData, FromLua, Lua, MetaMethod, Number, UserData, UserDataMethods};
+use rlua::{AnyUserData, Lua, MetaMethod, Number, UserData, UserDataMethods};
+use mlua::FromLua;
 use std::fmt::{Display, Formatter};
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
 use crate::interpolation::Interpolation;
