@@ -4,7 +4,7 @@ use crate::prelude::vec3;
 use crate::scalar::Scalar;
 use crate::vector::vec3::Vec3;
 use crate::vector::Vector;
-use rlua::{AnyUserData, Integer, MetaMethod, Number, UserData, UserDataMethods};
+use rlua::{AnyUserData, Integer, MetaMethod, Number, UserData, UserDataMethods, Lua};
 use mlua::FromLua;
 use std::ops::{Add, Mul};
 
