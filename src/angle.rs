@@ -37,7 +37,7 @@ impl <S: Scalar> Interpolation<S> for Angle<S> {
 }
 
 impl UserData for AngleF {
-    fn add_methods<M: UserDataMethods<Self>>(methods: &mut M) {
+    fn add_methods<'a, M: UserDataMethods<'a, Self>>(methods: &mut M) {
         methods.add_meta_method(MetaMethod::ToString, |_, this, ()| Ok(format!("{}", this)));
 
         methods.add_meta_method(MetaMethod::Add, |_, this, b: AnyUserData| {
@@ -118,7 +118,7 @@ impl UserData for AngleF {
 }
 
 impl UserData for AngleD {
-    fn add_methods<M: UserDataMethods<Self>>(methods: &mut M) {
+    fn add_methods<'a, M: UserDataMethods<'a, Self>>(methods: &mut M) {
         methods.add_meta_method(MetaMethod::ToString, |_, this, ()| Ok(format!("{}", this)));
 
         methods.add_meta_method(MetaMethod::Add, |_, this, b: AnyUserData| {
