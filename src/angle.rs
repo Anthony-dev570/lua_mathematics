@@ -1,9 +1,9 @@
+use crate::interpolation::Interpolation;
 use crate::scalar::Scalar;
-use rlua::{AnyUserData, Lua, MetaMethod, Number, UserDataMethods};
-use mlua::{FromLua, UserData};
+use mlua::FromLua;
+use rlua::{AnyUserData, Lua, MetaMethod, Number, UserData, UserDataMethods};
 use std::fmt::{Display, Formatter};
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
-use crate::interpolation::Interpolation;
 
 pub type AngleF = Angle<f32>;
 pub type AngleD = Angle<f64>;
@@ -17,18 +17,14 @@ pub enum AngleOperatorValue<S: Scalar> {
 #[derive(Debug, Clone, Copy, PartialOrd, FromLua)]
 pub enum Angle<S: Scalar> {
     Radians(S),
-    Degrees(S)
+    Degrees(S),
 }
 
-impl <S: Scalar> Interpolation<S> for Angle<S> {
+impl<S: Scalar> Interpolation<S> for Angle<S> {
     fn lerp(a: Self, b: Self, t: S) -> Self {
         match a {
-            Angle::Radians(a) => {
-                Self::Radians(S::lerp(a, b.take_radians(), t))
-            }
-            Angle::Degrees(d) => {
-                Self::Degrees(S::lerp(d, b.take_degrees(), t))
-            }
+            Angle::Radians(a) => Self::Radians(S::lerp(a, b.take_radians(), t)),
+            Angle::Degrees(d) => Self::Degrees(S::lerp(d, b.take_degrees(), t)),
         }
     }
 
