@@ -5,5 +5,5 @@ edition = "2021"
 
 [dependencies]
 rlua = { version = "*", features = ["default"] }
-mlua = { version = "*", features = ["macros"] }
+mlua = { version = "*", features = ["macros", "lua54"] }
 paste = "*"
